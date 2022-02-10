@@ -10,8 +10,11 @@ describe('solana-private-sale', () => {
   const program = anchor.workspace.SolanaPrivateSale as Program<SolanaPrivateSale>;
 
   it('Is initialized!', async () => {
-    // Add your test here.
-    const tx = await program.rpc.initialize({});
-    console.log("Your transaction signature", tx);
+    const accKeyPair = anchor.web3.Keypair.generate();
+    const user1 = anchor.web3.Keypair.generate();
+    const owner = program.provider.wallet;
+    await program.rpc.initialize({accounts:{acc: accKeyPair.publicKey}, signers: [accKeyPair]});
+    const state = await program.account.privateSale.fetch(accKeyPair.publicKey);
+    console.log('state: ', state)
   });
 });

@@ -9,16 +9,28 @@ pub mod solana_private_sale {
     pub fn initialize(ctx: Context<Initialize>) -> ProgramResult {
         Ok(())
     }
+
+    pub fn add_to_whitelist(ctx: Context<Initialize>, key: Pubkey, role: Role, ref_key: Pubkey, extra_key: [Pubkey;5]) -> ProgramResult {
+        let private_sale_info = &mut ctx.accounts.acc;
+        private_sale_info.whitelist.insert(key, WhitelistInfo {
+            role,
+            ref_key,
+            extra_key,
+        });
+        Ok(())
+    }
 }
 
 #[account]
-#[derive(Default)]
+// #[derive(Default)]
+// #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub struct PrivateSale {
     whitelist: BTreeMap<Pubkey, WhitelistInfo>,
 }
 
 #[account]
-#[derive(Default)]
+// #[derive(Default)]
+// #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub struct WhitelistInfo {
     role: Role,
     ref_key: Pubkey,
@@ -45,5 +57,7 @@ impl Default for Role {
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
-    pub acc: Account<'info, PrivateSale>
+    #[account(mut)]
+    pub acc: Account<'info, PrivateSale>,
+    // pub owner: Signer<'info>
 }
